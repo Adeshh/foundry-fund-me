@@ -39,22 +39,22 @@ contract CounterTest is Test {
         fundMe.fund{value: 0}();
     }
 
-    function testFundUpdatesIMPVariables() public funded{
+    function testFundUpdatesIMPVariables() public funded {
         uint256 amountFunded = fundMe.getAddressToAmountFunded(USER);
-        assertEq(amountFunded, 1e18);
+        assertEq(amountFunded, 10e18);
     }
 
     function testAddFunderToArrayOfFunders() public funded {
         assertEq(fundMe.getFunder(0), USER);
     }
 
-    function testOnlyOwnerCanWithdraw() public funded{
+    function testOnlyOwnerCanWithdraw() public funded {
         vm.prank(USER);
         vm.expectRevert();
         fundMe.withdraw();
     }
 
-    function testWithdrawWithSingleFunder() public funded{
+    function testWithdrawWithSingleFunder() public funded {
         uint256 startingOwnerBalance = fundMe.getOwner().balance;
         uint256 startingFundMeBalance = address(fundMe).balance;
 
@@ -68,14 +68,14 @@ contract CounterTest is Test {
         assertEq(endingFundMeBalance, 0);
     }
 
-    function testWithdrawWithMultipleFunders() public funded{
+    function testWithdrawWithMultipleFunders() public funded {
         //arrange
         uint160 numberOfFunders = 5;
         uint160 startingFunderIndex = 1;
-        
+
         for (uint160 i = startingFunderIndex; i < numberOfFunders; i++) {
-            hoax(address(i), 1e18);
-            fundMe.fund{value: 1e18}();
+            hoax(address(i), 10e18);
+            fundMe.fund{value: 10e18}();
         }
 
         uint256 startingOwnerBalance = fundMe.getOwner().balance;
@@ -88,13 +88,11 @@ contract CounterTest is Test {
         //assert
         assertEq(address(fundMe).balance, 0);
         assertEq(startingFundMeBalance + startingOwnerBalance, fundMe.getOwner().balance);
-
     }
-    
 
-    modifier funded(){
+    modifier funded() {
         vm.prank(USER);
-        fundMe.fund{value: 1e18}();
+        fundMe.fund{value: 10e18}();
         _;
     }
 }
